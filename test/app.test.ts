@@ -25,19 +25,21 @@ test("canonical template bloatware removal invariants", () => {
   assert.equal(rootContent.includes("Footer"), false, "__root.tsx should not reference Footer");
   assert.equal(rootContent.includes("TanStackDevtools"), false, "__root.tsx should not reference TanStackDevtools");
 
-  // Header must not contain external links or about link
+  // Header must not contain external links or about link, and defaults brand to App
   const headerContent = fs.readFileSync(path.join(srcDir, "components/Header.tsx"), "utf-8");
   assert.equal(headerContent.includes("to=\"/about\""), false, "Header should not link to /about");
   assert.equal(headerContent.includes("tanstack.com"), false, "Header should not link to tanstack.com");
   assert.equal(headerContent.includes("x.com"), false, "Header should not link to x.com");
   assert.equal(headerContent.includes("github.com"), false, "Header should not link to github.com");
+  assert.ok(headerContent.includes("App"), "Header should use App as brand default");
+  assert.equal(headerContent.includes("TanStack Start"), false, "Header should not use TanStack Start as brand default");
 
-  // Index route must contain clean workspace prompt and no marketing copy
+  // Index route must be a clean canvas with no boilerplate copy
   const indexContent = fs.readFileSync(path.join(srcDir, "routes/index.tsx"), "utf-8");
-  assert.ok(indexContent.includes("Application Workspace"), "index.tsx should contain Application Workspace");
-  assert.ok(indexContent.includes("Ready for development. Prompt Factory Studio to build features and components."), "index.tsx should contain prompt guidance");
+  assert.equal(indexContent.includes("Application Workspace"), false, "index.tsx should not contain Application Workspace");
+  assert.equal(indexContent.includes("Ready for development"), false, "index.tsx should not contain boilerplate prompt guidance");
   assert.equal(indexContent.includes("Start simple, ship quickly"), false, "index.tsx should not contain old hero headline");
   assert.equal(indexContent.includes("TANSTACK START BASE TEMPLATE"), false, "index.tsx should not contain old kicker");
   assert.equal(indexContent.includes("Type-Safe Routing"), false, "index.tsx should not contain feature cards");
+  assert.ok(indexContent.includes('<main className="page-wrap px-4 py-8 min-h-screen"></main>'), "index.tsx should contain clean canvas main container");
 });
-
